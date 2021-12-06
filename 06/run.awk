@@ -12,19 +12,6 @@ BEGIN {
     }
 }
 
-function step(_f, _carry) {
-    for (_f = 0; _f <= 8; _f++) {
-        if (_f == 0) {
-            _carry = FISH[0]
-        } else {
-            FISH[_f-1] = FISH[_f]
-        }
-    }
-    
-    FISH[6] += _carry
-    FISH[8] =  _carry
-}
-
 function total(_t, _f) {
     for (_f in FISH) {
         _t += FISH[_f]
@@ -33,15 +20,12 @@ function total(_t, _f) {
 }
 
 END {
-    for (i = 1; i <= 80; i++) {
-        step()
-    }
-    print(total())
-}
+    for (day = 1; day <= 256; day++) {
+        FISH[(day + 6) % 9] += FISH[(day + 8) % 9]
 
-END {
-    for (i = 81; i <= 256; i++) {
-        step()
+        if (day == 80 || day == 256) {
+            print(total())
+        }
     }
-    print(total())
+    
 }
