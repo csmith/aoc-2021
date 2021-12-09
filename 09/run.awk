@@ -40,7 +40,7 @@ END {
     for (y in GRID) {
         for (x in GRID[y]) {
             val = GRID[y][x]
-            if (GRID[y-1][x] < val && GRID[y+1][x] < val && GRID[y][x-1] < val && GRID[y][x+1] < val) {
+            if (val > 1 && GRID[y-1][x] < val && GRID[y+1][x] < val && GRID[y][x-1] < val && GRID[y][x+1] < val) {
                 RISK += 11-val
                 BASINS[length(BASINS)] = flood(y, x)
             }
