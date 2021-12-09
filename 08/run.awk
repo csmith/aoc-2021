@@ -5,7 +5,6 @@ BEGIN {
     ARGC = 2
 }
 
-
 {
     gsub("\\|", "")
 }
@@ -74,7 +73,7 @@ function toDigit(v) {
 
     # First pass - prune the options based on the number of segments
     # If there are 2, 3 or 4 letters we know which possible segments they could be
-    # If there are 5, 6 or 7 letters we know what the missing segments _can't_ be
+    # If there are 5 or 6 letters we know what the missing segments _can't_ be
     for (i = 1; i<= NF; i++) {
         len = length($i)
 
