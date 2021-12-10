@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE=csmith/aoc-2021-02
+IMAGE=csmith/aoc-2021-03
 
 docker image inspect $IMAGE >/dev/null 2>&1
 if [ $? -ne 0 ]
@@ -11,4 +11,4 @@ then
     cd ..
 fi
 
-docker run --rm -it -v "$(pwd)":/code $IMAGE /entrypoint.sh $@
+docker run --rm -it -v "$(pwd)":/code $IMAGE $@
