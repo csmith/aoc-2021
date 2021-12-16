@@ -5,6 +5,7 @@ BEGIN {
     ARGC = 2
     FS = ""
 
+    # This does not spark joy.
     HEX2BIN["0"] = "0000"
     HEX2BIN["1"] = "0001"
     HEX2BIN["2"] = "0010"
@@ -34,13 +35,13 @@ function bin2dec(bin,    i, len, out) {
     return out
 }
 
-function read_literal(data, i,    buf) {
-    while (substr(data, i[0], 1) == "1") {
-        buf = buf substr(data, i[0]+1, 4)
-        i[0] += 5
+function read_literal(    buf) {
+    while (substr(DATA, OFFSET, 1) == "1") {
+        buf = buf substr(DATA, OFFSET+1, 4)
+        OFFSET += 5
     }
-    buf = buf substr(data, i[0]+1, 4)
-    i[0] += 5
+    buf = buf substr(DATA, OFFSET+1, 4)
+    OFFSET += 5
     return bin2dec(buf)
 }
 
@@ -92,30 +93,30 @@ function evaluate(type, values,    i, res) {
     return res
 }
 
-function read_packet(data, i,    version, type, value, values, count) {
-    version = bin2dec(substr(data, i[0], 3))
-    type = bin2dec(substr(data, i[0] + 3, 3))
-    i[0] += 6
+function read_packet(    version, type, value, values, count) {
+    version = bin2dec(substr(DATA, OFFSET, 3))
+    type = bin2dec(substr(DATA, OFFSET + 3, 3))
+    OFFSET += 6
     
     if (type == 4) {
-        value = read_literal(data, i)
-    } else if (substr(data, i[0], 1) == "0") {
+        value = read_literal()
+    } else if (substr(DATA, OFFSET, 1) == "0") {
         # Next 15 bits are the total length in bits
-        count = i[0] + 16 + bin2dec(substr(data, i[0]+1, 15))
-        i[0] += 16
+        count = OFFSET + 16 + bin2dec(substr(DATA, OFFSET+1, 15))
+        OFFSET += 16
         delete values[0]
-        while (i[0] < count) {
-            values[length(values)] = read_packet(data, i)
+        while (OFFSET < count) {
+            values[length(values)] = read_packet()
         }
         value = evaluate(type, values)
     } else {
         # Next 11 bits are the total number of subpackets
-        count = bin2dec(substr(data, i[0]+1, 11))
-        i[0] += 12
+        count = bin2dec(substr(DATA, OFFSET+1, 11))
+        OFFSET += 12
         delete values[0]
         while (count > 0) {
             count--
-            values[length(values)] = read_packet(data, i)
+            values[length(values)] = read_packet()
         }
         value = evaluate(type, values)
     }
@@ -125,12 +126,12 @@ function read_packet(data, i,    version, type, value, values, count) {
 }
 
 {
-    line = ""
+    DATA = ""
+    OFFSET = 1
     for (i = 1; i <= NF; i++) {
-        line = line HEX2BIN[$i]
+        DATA = DATA HEX2BIN[$i]
     }
-    offset[0] = 1
-    PART_TWO = read_packet(line, offset)
+    PART_TWO = read_packet()
 }
 
 END {
